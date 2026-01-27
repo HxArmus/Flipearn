@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import { ArrowLeftIcon, FilterIcon, Verified } from 'lucide-react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useSelector } from 'react-redux';
 import ListingCard from '../components/listingCard';
 import Filtersidebar from '../components/Filtersidebar';
 
 const Marketplace = () => {
+  const [searchParam]= useSearchParams();
+  const search=searchParam.get('search')||'';
+
   const navigate=useNavigate();
   const [showFilterPhone,setShowFilterPhone]=React.useState(false);
   const {listings}=useSelector(state=>state.listing);
@@ -20,6 +23,50 @@ const Marketplace = () => {
 
   {/* filter (currently keeps all) */}
   const filteredListings = listings.filter((listing)=>{
+    if(filter.platform && filter.platform.length>0){
+      if(!filter.platform.includes(listing.platform)){
+        return false;
+      }
+    }
+
+    if(filter.maxPrice){
+      if(!filter.maxPrice>=listing.price){
+        return false;
+      }
+    }
+    if(filter.minFollowers && filter.platform.length>0){
+      if(listing.followers<filter.minFollowers){
+        return false;
+      }
+    }
+    if(filter.niche && filter.niche.length>0){
+      if(!filter.niche.includes(listing.niche)){
+        return false;
+      }
+    }
+    if(filter.verified){
+      if(!listing.verified){
+        return false;
+      }
+    }
+    if(filter.monetized){
+      if(!listing.monetized){
+        return false;
+      }
+    }
+    if(search){
+      const trim =search.trim();
+      if(
+        !listing.title.toLowerCase().includes(trim.toLowerCase()) &&
+       !listing.description.toLowerCase().includes(trim.toLowerCase()) &&
+       !listing.niche.toLowerCase().includes(trim.toLowerCase()) &&
+       !listing.platform.toLowerCase().includes(trim.toLowerCase())&&
+       !listing.username.toLowerCase().includes(trim.toLowerCase())
+      ){
+        return false;
+      }
+    }
+
     return true;
   })
 
