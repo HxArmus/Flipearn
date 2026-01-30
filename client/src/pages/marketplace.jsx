@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { ArrowLeftIcon, FilterIcon, Verified } from 'lucide-react'
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { useSelector } from 'react-redux';
-import ListingCard from '../components/listingCard';
+import ListingCard from '../components/ListingCard';
 import Filtersidebar from '../components/Filtersidebar';
 
 const Marketplace = () => {

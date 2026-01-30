@@ -1,15 +1,298 @@
-import React from 'react'
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { getProfileLink, platformIcons } from "../assets/assets";
+import { useSelector, useDispatch } from "react-redux";
+import { setChat } from "../app/features/chatSlice";
+import {
+  ArrowLeftIcon,
+  ArrowUpRightFromSquareIcon,
+  Calendar,
+  CheckCircle2,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  DollarSign,
+  Eye,
+  LineChart,
+  Loader2Icon,
+  MapPin,
+  MessageSquareMoreIcon,
+  ShoppingBagIcon,
+  User,
+} from "lucide-react";
 
 const Listingdetails = () => {
-  return (
-    <div>
 
-        <h1>
-            ListingDeatils Page
-        </h1>
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const currency = import.meta.env.VITE_CURRENCY || "$";
 
+  const [listing, setListing] = useState(null);
+  const [current, setCurrent] = useState(0);
+
+  const { listingId } = useParams();
+  const listings = useSelector((state) => state.listing.listings);
+
+  const profileLink =
+    listing && getProfileLink(listing.platform, listing.username);
+
+  const images =
+    listing && Array.isArray(listing.images) && listing.images.length > 0
+      ? listing.images
+      : [];
+
+  const prevSlide = () => {
+    if (!images.length) return;
+    setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+  };
+
+  const nextSlide = () => {
+    if (!images.length) return;
+    setCurrent((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+  };
+  const purchaseAccount = async() => {};
+  const loadChatBox = () => {
+    dispatch(setChat({ listing, chatId: null }));
+  };
+
+  useEffect(() => {
+    const foundListing = listings.find((item) => item.id === listingId);
+    if (foundListing) {
+      setListing(foundListing);
+      setCurrent(0);
+    }
+  }, [listingId, listings]);
+
+  if (!listing) {
+    return (
+      <div className="h-screen flex justify-center items-center">
+        <Loader2Icon className="size-7 animate-spin text-indigo-600" />
+      </div>
+    );
+  }
+
+  return listing ?(
+    <div className="mx-auto min-h-screen px-5 md:px-16 lg:px-24 xl:px-32">
+      <button
+        onClick={() => navigate(-1)}
+        className="flex items-center gap-2 text-slate-600 py-5"
+      >
+        <ArrowLeftIcon className="size-4" />
+        Go to previous page
+      </button>
+
+      <div className="flex items-start max-md:flex-col gap-10">
+        <div className="flex-1 max-md:w-full">
+          {/* Top Section */}
+          <div className="bg-white rounded-xl border border-gray-200 p-6 mb-5">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="p-2 rounded-xl">
+                  {platformIcons?.[listing.platform]}
+                </div>
+                <div>
+                  <h2 className="flex items-center gap-2 text-xl font-semibold text-gray-800">
+                    {listing.title}
+                    {profileLink && (
+                      <Link target="_blank" to={profileLink}>
+                        <ArrowUpRightFromSquareIcon className="size-4 text-indigo-600 hover:text-indigo-800" />
+                      </Link>
+                    )}
+                  </h2>
+                  <p className="text-gray-500 text-sm">
+                    @{listing.username} • {listing.platform?.charAt(0).toUpperCase() + listing.platform?.slice(1)}
+                  </p>
+
+                  <div className="flex gap-2 mt-2">
+                    {listing.verified && (
+                      <span className="flex items-center text-xs px-2 py-1 bg-indigo-50 text-indigo-600 rounded-md gap-1">
+                        <CheckCircle2 className="w-3 h-3" /> Verified
+                      </span>
+                    )}
+
+                    {listing.monetized && (
+                      <span className="flex items-center text-xs px-2 py-1 bg-green-50 text-green-600 rounded-md gap-1">
+                        <DollarSign className="w-3 h-3" /> Monetized
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-right">
+                <h3 className="text-2xl font-bold text-gray-800">
+                  {currency}{listing.price?.toLocaleString()}
+                </h3>
+                <p className="text-sm text-gray-500">USD</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Screenshot Section */}
+          {images.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 mb-5 overflow-hidden">
+              <div className="p-4">
+                <h4 className="font-semibold text-gray-800">Screenshots & Proof</h4>
+              </div>
+
+              <div className="relative w-full aspect-video overflow-hidden">
+                <div
+                  className="flex transition-transform duration-300 ease-in-out"
+                  style={{ transform: `translateX(-${current * 100}%)` }}
+                >
+                  {images.map((img, index) => (
+                    <img
+                      key={index}
+                      src={img}
+                      alt="Listing Proof"
+                      className="w-full shrink-0 object-cover"
+                    />
+                  ))}
+                </div>
+
+                <button
+                  onClick={prevSlide}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white p-2 rounded-full shadow"
+                >
+                  <ChevronLeftIcon className="w-5 h-5 text-gray-700" />
+                </button>
+
+                <button
+                  onClick={nextSlide}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white p-2 rounded-full shadow"
+                >
+                  <ChevronRightIcon className="w-5 h-5 text-gray-700" />
+                </button>
+
+                <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-2">
+                  {images.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrent(index)}
+                      className={`w-2.5 h-2.5 rounded-full ${current === index ? "bg-indigo-600" : "bg-gray-300"}`}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Account Metrics */}
+          <div className="bg-white rounded-xl border border-gray-200 mb-5">
+            <div className="p-4 border-b border-gray-100">
+              <h4 className="font-semibold text-gray-800">Account Metrics</h4>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 text-center">
+              <div>
+                <User className="mx-auto text-gray-400 w-5 h-5 mb-1" />
+                <p className="font-semibold text-gray-800">
+                  {listing.followers_count?.toLocaleString()}
+                </p>
+                <p className="text-xs text-gray-500">Followers</p>
+              </div>
+              <div>
+                <LineChart className="mx-auto text-gray-400 w-5 h-5 mb-1" />
+                <p className="font-semibold text-gray-800">
+                  {listing.engagement_rate}%
+                </p>
+                <p className="text-xs text-gray-500">Engagement</p>
+              </div>
+              <div>
+                <Eye className="mx-auto text-gray-400 w-5 h-5 mb-1" />
+                <p className="font-semibold text-gray-800">
+                  {listing.monthly_views?.toLocaleString()}
+                </p>
+                <p className="text-xs text-gray-500">Monthly Views</p>
+              </div>
+              <div>
+                <Calendar className="mx-auto text-gray-400 w-5 h-5 mb-1" />
+                <p className="font-semibold text-gray-800">
+                  {new Date(listing.createdAt).toLocaleDateString()}
+                </p>
+                <p className="text-xs text-gray-500">Listed</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Description Section */}
+          <div className="bg-white rounded-xl border border-gray-200 mb-5">
+            <div className="p-4 border-b border-gray-100">
+              <h4 className="font-semibold text-gray-800">Description</h4>
+            </div>
+            <div className="text-gray-600 p-4 whitespace-pre-line">
+              {listing.description}
+            </div>
+          </div>
+
+          {/* Additional Info Section */}
+          <div className="bg-white rounded-xl border border-gray-200 mb-5">
+            <div className="p-4 border-b border-gray-100">
+              <h4 className="font-semibold text-gray-800">Additional Info</h4>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 text-gray-600 text-sm">
+              <div>
+                <p className="text-gray-500">Niche</p>
+                <p className="font-medium capitalize">{listing.niche}</p>
+              </div>
+              <div>
+                <p className="text-gray-500">Primary country</p>
+                <p className="font-medium flex items-center gap-1">
+                  <MapPin className="w-4 h-4 text-gray-400" /> {listing.country}
+                </p>
+              </div>
+              <div>
+                <p className="text-gray-500">Audience Age</p>
+                <p className="font-medium">{listing.age_range}</p>
+              </div>
+              <div>
+                <p className="text-gray-500">Platform Verified</p>
+                <p className="font-medium">{listing.platformAssured ?"yes":"no"}</p>
+              </div>
+              <div>
+                <p className="text-gray-500">Monetization</p>
+                <p className="font-medium">{listing.monetized ?"Enable":"Disabled"}</p>
+              </div>
+              <div>
+                <p className="text-gray-500">Status</p>
+                <p className="font-medium capitalize">{listing.status}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Seller Info & Purchase Options */}
+        <div className="bg-white min-w-full md:min-w-[370px] rounded-xl border border-gray-200 p-5 max-md:mb-10">
+          <h4 className="font-semibold text-gray-800 mb-4">Seller Information</h4>
+          <div className="flex items-center gap-3 mb-2">
+            <img src={listing.owner?.image} alt="seller image" className="
+            rounded-full w-10 h-10 object-cover"/>
+            <div>
+              <p className="font-medium text-gray-800">{listing.owner?.name}</p>
+              <p className="text-sm text-gray-600">{listing.owner?.email}</p>
+            </div>
+
+          </div>
+          <div className="flex items-center justify-between text-sm text-gray-600 mb-5">
+            <p>Member Since <span className="font-medium">{new Date(listing.owner?.createdAt).toLocaleDateString()}</span></p>
+          </div>
+          <button onClick={loadChatBox} className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition text-sm font-medium flex items-cneter justify-center gap-2">
+            <MessageSquareMoreIcon className="size-4" />
+            Chat
+          </button>
+          {listing.isCredentialChanged && (
+            <button onClick={purchaseAccount} className="w-full mt-2 bg-purple-600 text-white py-2 rounded-lg hover:bg-purple-700 transition text-sm font-medium flex items-center justify-center gap-2">
+            <ShoppingBagIcon className="size-4" />
+            Purchase
+          </button>
+          )}
+        </div>
+      </div>
+      {/* footer */}
+      <div className="bg-white border-gray-200 p-4 text-center mt-28">
+        <p className="text-sm text-gray-500">© 2026 <span className="text-indigo-300">Hx_Armus</span>. All rights reserved.</p>
+      </div>
     </div>
-  )
-}
+  ):
+  ( <div className="h-screen flex justify-center items-center"> <Loader2Icon className="size-7 animate-spin text-indigo-600" /> </div> );
+};
 
-export default Listingdetails
+export default Listingdetails;
