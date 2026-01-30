@@ -9,6 +9,7 @@ import Messages from './pages/messages'
 import Myorder from './pages/myorders'
 import Loadingpage from './pages/loadingpage'
 import Navbar from './components/navbar'
+import Chatbox from './components/Chatbox'
 
 const App = () => {
 
@@ -34,6 +35,7 @@ const App = () => {
 
 
       </Routes>
+      <Chatbox />
     </div>
   )
 }
