@@ -39,21 +39,28 @@ const Chatbox = () => {
     }
   }, [isOpen]);
 
-  // -- for Auto scroll --
+  // Auto-scroll
   const messagesEndRef = useRef(null);
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages.length]);
 
-  const handleSendMessage = async(e)=>{
+  const handleSendMessage = async (e) => {
     e.preventDefault();
-    if(!newMessage.trim() || isSending) return;
-    setMessages([...messages,{id: Date.now(),chatId: chat.id, sender_id :user.id , message:
-        newMessage, createdAt: new Date()
-    }]);
+    if (!newMessage.trim() || isSending) return;
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        chatId: chat.id,
+        sender_id: user.id,
+        message: newMessage,
+        createdAt: new Date(),
+      },
+    ]);
+
     setNewMessage("");
-
-
   };
 
   if (!isOpen || !listing) {
@@ -61,7 +68,7 @@ const Chatbox = () => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur bg-opacity-50 z-50 flex items-center justify-center sm:p-4">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur z-50 flex items-center justify-center sm:p-4">
       <div className="bg-white sm:rounded-lg shadow-2xl w-full max-w-2xl h-screen sm:h-[600px] flex flex-col">
         {/* Header */}
         <div className="bg-gradient-to-r from-indigo-600 to-indigo-400 text-white p-4 sm:rounded-t-lg flex items-center justify-between">
@@ -78,7 +85,7 @@ const Chatbox = () => {
           </button>
         </div>
 
-        {/* Messages Area */}
+        {/* Messages */}
         <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-100">
           {isLoading ? (
             <div className="flex items-center justify-center h-full">
@@ -95,7 +102,11 @@ const Chatbox = () => {
             messages.map((message) => (
               <div
                 key={message.id}
-                className={`flex ${message.sender_id === user.id ? "justify-end" : "justify-start"}`}
+                className={`flex ${
+                  message.sender_id === user.id
+                    ? "justify-end"
+                    : "justify-start"
+                }`}
               >
                 <div
                   className={`max-w-[70%] rounded-lg p-3 pb-1 ${
@@ -122,30 +133,34 @@ const Chatbox = () => {
           )}
           <div ref={messagesEndRef} />
         </div>
-        {/*input area*/}
+
+        {/* Input */}
         {chat?.listing?.status === "active" ? (
-          <form onSubmit={handleSendMessage} className="p-4 bg-white border-t border-gray-200 rounded-b-lg ">
-            <div className="flex items-end space-x-2 ">
+          <form
+            onSubmit={handleSendMessage}
+            className="p-4 bg-white border-t border-gray-200 rounded-b-lg"
+          >
+            <div className="flex items-end space-x-2">
               <textarea
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "enter" && !e.shiftKey) {
+                  if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     handleSendMessage(e);
                   }
                 }}
-                placeholder="type your message..."
-                className="flex-1 resize-none border border-gray-300 rounded-lg px-4 py-2 focus:outline-indigo-500 max-h-32 "
+                placeholder="Type your message..."
+                className="flex-1 resize-none border border-gray-300 rounded-lg px-4 py-2 focus:outline-indigo-500 max-h-32"
                 rows={1}
               />
               <button
                 disabled={!newMessage.trim() || isSending}
                 type="submit"
-                className="bg-indigo-600 hover:bg-indigo-700 text-white p-2.5 rounded-lg disable:opacity-50 transition-colors"
+                className="bg-indigo-600 hover:bg-indigo-700 text-white p-2.5 rounded-lg disabled:opacity-50 transition-colors"
               >
                 {isSending ? (
-                  <Loader2Icon className="w-5 h-5 animate-spin " />
+                  <Loader2Icon className="w-5 h-5 animate-spin" />
                 ) : (
                   <Send className="w-5 h-5" />
                 )}
@@ -153,11 +168,11 @@ const Chatbox = () => {
             </div>
           </form>
         ) : (
-          <div className=" p-4 bg-white border-t border-gray-200 rounded-b-lg">
+          <div className="p-4 bg-white border-t border-gray-200 rounded-b-lg">
             <p className="text-sm text-gray-600 text-center">
               {chat
                 ? `Listing is ${chat?.listing?.status}`
-                : "loading chat ..."}
+                : "Loading chat..."}
             </p>
           </div>
         )}
