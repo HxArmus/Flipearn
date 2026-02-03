@@ -2,8 +2,11 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { MessageCircle, Search } from "lucide-react";
 import { dummyChats } from '../assets/assets';
 import {format, isToday, isYesterday, parseISO} from 'date-fns'
+import { useDispatch } from 'react-redux'
+import { setChat } from '../app/features/chatSlice';
 
 const Messages = () => {
+  const dispatch = useDispatch();
   const user = { id: "user_1" };
 
   const [chats, setChats] = useState([]);
@@ -19,7 +22,7 @@ const Messages = () => {
     if(isYesterday(date)){
       return 'Yesterday '+ format(date, "HH:mm");
     }
-    return format(date, "MMM d")
+    return format(date, "MMM dd")
   }
 
   const filterChats = useMemo(()=>{
@@ -32,6 +35,10 @@ const Messages = () => {
     })
   },[chats, searchQuery])
 
+  const handleOpenChat = (chat)=>{
+    dispatch(setChat({listing: chat.listing, chatId: chat.id}))
+
+  }
   const fetchUserChats = async () => {
     setChats(dummyChats);
     setLoading(false);
@@ -97,7 +104,7 @@ const Messages = () => {
                     : chat.chatUser;
 
                 return (
-                  <button
+                  <button onClick={()=>{handleOpenChat(chat)}}
                     key={chat.id}
                     className="w-full p-4 hover:bg-gray-50 transition-colors text-left"
                   >
