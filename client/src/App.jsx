@@ -2,7 +2,7 @@ import React from 'react'
 import { Routes,Route, useLocation } from 'react-router-dom'
 import Home from './pages/home'
 import Marketplace from './pages/marketplace'
-import Mylisting from './pages/mylisting'
+import MyListing from './pages/mylisting'
 import Listingdetails from './pages/listingdetails'
 import Managelisting from './pages/managelisting'
 import Messages from './pages/messages'
@@ -10,6 +10,7 @@ import Myorder from './pages/myorders'
 import Loadingpage from './pages/loadingpage'
 import Navbar from './components/navbar'
 import Chatbox from './components/Chatbox'
+import { Toaster } from 'react-hot-toast'
 
 const App = () => {
 
@@ -19,11 +20,13 @@ const App = () => {
 
   return (
     <div>
+      <Toaster />
+
       {!pathname.includes('/admin')&&  <Navbar/>}
       <Routes>
         <Route path='/' element={<Home/>} />
          <Route path='/marketplace' element={<Marketplace/>} />
-          <Route path='/my-listing' element={<Mylisting/>} />
+          <Route path='/my-listings' element={<MyListing />} />
            <Route path='/listing/:listingId' element={<Listingdetails/>} />
             <Route path='/create-listing' element={<Managelisting/>} />
             <Route path='/edit-listing/:id' element={<Managelisting/>} />
