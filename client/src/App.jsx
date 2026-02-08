@@ -11,6 +11,14 @@ import Loadingpage from './pages/loadingpage'
 import Navbar from './components/navbar'
 import Chatbox from './components/Chatbox'
 import { Toaster } from 'react-hot-toast'
+import Layout from './pages/Admin/Layout'
+import Dashboard from './pages/Admin/Dashboard'
+import AllListings from './pages/Admin/AllListings'
+import CredentialChange from './pages/Admin/CredentialChange'
+import CredentialVerify from './pages/Admin/CredentialVerify'
+import Transactions from './pages/Admin/Transactions'
+import Withdrawal from './pages/Admin/Withdrawal'
+
 
 const App = () => {
 
@@ -33,6 +41,18 @@ const App = () => {
               <Route path='/messages' element={<Messages/>} />
                <Route path='/my-orders' element={<Myorder/>} />
                <Route path='/loading' element={<Loadingpage/>} />
+
+               <Route path='/admin' element={<Layout />}>
+               <Route index element={<Dashboard />} />
+               <Route path='verify-credentials' index element={<CredentialVerify />}/>
+               <Route path='change-credentials' index element={<CredentialChange />}/>
+               <Route path='list-Listings' index element={<AllListings />}/>
+               <Route path='transactions' index element={<Transactions />}/>
+               <Route path='withdrawal' index element={<Withdrawal />}/>
+               
+
+
+               </Route>
              
                 
 
