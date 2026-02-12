@@ -24,20 +24,27 @@ import {
   EyeIcon,
 } from "lucide-react";
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Statcard from "../components/Statcard";
-import {} from "../app/features/listingSlice";
+import { getAllPublicListing, getAllUserListing } from "../app/features/listingSlice";
 import { platformIcons } from "../assets/assets";
 import { useState } from "react";
 import CredentialSubmission from "../components/CredentialSubmission";
 import WithdrawModel from "../components/WithdrawModel";
+import {useAuth } from '@clerk/clerk-react'
+import toast from "react-hot-toast";
+import api from "../configs/axios";
 
 const MyListing = () => {
   const { userListings, balance } = useSelector((state) => state.listing);
   const currency = import.meta.env.VITE_CURRENCY || "$";
 
   const navigate = useNavigate();
+
+  const {getToken } = useAuth();
+  const dispatch = useDispatch();
+
 
   const [showCredentialSubmissions, setShowCredentialSubmissions] =
     useState(null);
@@ -53,6 +60,8 @@ const MyListing = () => {
   const soldListings = userListings.filter(
     (listing) => listing.status === "sold",
   ).length;
+
+
   const formatNumber = (num) => {
     if (num >= 1000000) {
       return (num / 1000000).toFixed(1) + "M";
@@ -61,6 +70,8 @@ const MyListing = () => {
     }
     return num?.toString() || "0";
   };
+
+
   const getStatusIcon = (status) => {
     switch (status) {
       case "active":
@@ -75,6 +86,8 @@ const MyListing = () => {
         return <Clock className="size-4 text-gray-600" />;
     }
   };
+
+
   const getStatuscolor = (status) => {
     switch (status) {
       case "active":
@@ -91,16 +104,66 @@ const MyListing = () => {
   };
   const toggleStatus = async (listingId) => {
     // Simulate API call to toggle listing status
-    console.log("Toggling status for listing ID:", listingId);
+    try {
+      toast.loading('updating listing status...')
+      const token = await getToken();
+      const {data} = await api.put(`/api/listing/${listingId}/status`,{},
+        {
+          headers:{Authorization:`Bearer ${token}`}
+        })
+        dispatch(getAllUserListing({getToken}))
+        dispatch(getAllPublicListing({}));
+        toast.dismissAll();
+      
+    } catch (error) {
+      toast.dismissAll();
+      toast.error(error?.response?.data?.message || error.message);
+      
+    }
+    
   };
   const deleteListing = async (listingId) => {
     // Simulate API call to toggle listing status
-    console.log("Toggling status for listing ID:", listingId);
+    try {
+      const confirm = window.confirm(
+        "Are you sure you want to delete this listing? if credentials are changed, new Credentials will be sent to you email",
+      );
+      if (!confirm) return;
+      toast.loading("Deleting listing...");
+      const token = await getToken();
+      const { data } = await api.delete(`/api/listing/${listingId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      dispatch(getAllUserListing({ getToken }));
+      dispatch(getAllPublicListing({}));
+      toast.dismissAll();
+      toast.success(data.message);
+    } catch (error) {
+      toast.dismissAll();
+      toast.error(error?.response?.data?.message || error.message);
+    }
   };
   const markAsFeatured = async (listingId) => {
     // Simulate API call to toggle listing status
-    console.log("Toggling status for listing ID:", listingId);
+     try {
+      toast.loading('featuring listing...')
+      const token = await getToken();
+      const {data} = await api.put(`/api/listing/featured/${listingId}`,{},
+        {
+          headers:{Authorization:`Bearer ${token}`}
+        })
+        dispatch(getAllUserListing({getToken}))
+        dispatch(getAllPublicListing({}));
+        toast.dismissAll();
+      
+    } catch (error) {
+      toast.dismissAll();
+      toast.error(error?.response?.data?.message || error.message);
+      
+    }
+    
   };
+  
 
   return (
     <div className="px-6 md:px-16 lg:px-24 xl:px-32 min-h-screen">

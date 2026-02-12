@@ -1,7 +1,13 @@
 import React, { useState } from 'react'
 import { X } from 'lucide-react'
+import { useAuth } from '@clerk/clerk-react'
+import { useDispatch } from 'react-redux';
 
 const WithdrawModel = ({ onclose }) => {
+
+    const {getToken} = useAuth();
+    const dispatch = useDispatch();
+
     const [amount, setAmount] = useState('')
     const [account, setAccount] = useState([
         { type: 'text', name: 'Account Holder Name', value: '' },
@@ -15,6 +21,33 @@ const WithdrawModel = ({ onclose }) => {
     const handleSubmission = async (e) => {
         e.preventDefault()
         // Handle form submission logic here
+         try {
+            if (account.length === 0) {
+                return toast.error("please add at least one field")
+            }
+
+            for (const field of account) {
+                if (!field.value) {
+                    return toast.error(`Please fill in the ${field.name} field`)
+                }
+            }
+
+            const confirm = window.confirm("Are you sure you want to submit?")
+
+            if (!confirm) {
+                return
+            }
+
+            const token = await getToken()
+            const { data } = await api.post(`/api/listing/withdraw`, { account, amount: parseInt(amount) }, { headers: { Authorization: `Bearer ${token}` } })
+            toast.success(data.message)
+            dispatch(getAllUserListing({getToken}))
+            onClose()
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error?.message)
+            console.log(error)
+        }
+
     }
 
     return (

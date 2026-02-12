@@ -1,8 +1,20 @@
 import React, { useState } from 'react'
 import toast from 'react-hot-toast'
 import { CirclePlus, X } from 'lucide-react'
+import { useAuth } from '@clerk/clerk-react'
+import { useDispatch } from 'react-redux';
+import api from "../configs/axios"
+import { getAllUserListing } from "../app/features/listingSlice"
+
+
+
+
 
 const CredentialSubmission = ({ onClose, listing }) => {
+
+    const {getToken} = useAuth();
+const dispatch = useDispatch();
+
     const [newField, setNewField] = useState('')
     const [credentials, setCredentials] = useState([
         { type: 'email', name: 'Email', value: '' },
@@ -22,6 +34,35 @@ const CredentialSubmission = ({ onClose, listing }) => {
     const handleSubmission = async (e) => {
         e.preventDefault()
         // submission logic placeholder
+        try {
+            if (credentials.length === 0) {
+                return toast.error("Please add at least one field")
+            }
+
+            for (const cred of credentials) {
+                if (!cred.value) {
+                    return toast.error(`Please fill in the ${cred.name} field`)
+                }
+            }
+
+            const confirm = window.confirm("Credentials will be verified & changed post submission. Are you sure you want to submit?")
+
+            if (!confirm) {
+                return
+            }
+
+            const token = await getToken()
+            const {data} = await api.post(
+                "/api/listing/add-credential",
+                { credential: credentials, listingId: listing.id },
+                { headers: { Authorization: `Bearer ${token}` } }
+            )
+            toast.success(data.message)
+            dispatch(getAllUserListing({getToken}))
+               onClose()
+        } catch (error) {
+            toast.error(error?.response?.data?.message || error?.message)
+        }
     }
 
     return (
@@ -87,4 +128,3 @@ const CredentialSubmission = ({ onClose, listing }) => {
 }
 
 export default CredentialSubmission
-

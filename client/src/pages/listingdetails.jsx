@@ -19,8 +19,13 @@ import {
   ShoppingBagIcon,
   User,
 } from "lucide-react";
+import toast from "react-hot-toast";
+import { useUser } from "@clerk/clerk-react";
 
 const Listingdetails = () => {
+
+  const {user, isLoaded} = useUser();
+  
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -51,8 +56,11 @@ const Listingdetails = () => {
   };
   const purchaseAccount = async() => {};
   const loadChatBox = () => {
+    if(!user || !isLoaded) return toast('please login to chat with seller')
+      if(user.id === listing.ownerId) return toast('you cant chat with your own listing')
     dispatch(setChat({ listing, chatId: null }));
   };
+  
 
   useEffect(() => {
     const foundListing = listings.find((item) => item.id === listingId);

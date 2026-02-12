@@ -1,14 +1,20 @@
 import React from "react";
 import { Loader2Icon, Upload, X } from "lucide-react";
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-
+import { useAuth } from "@clerk/clerk-react";
+import { getAllPublicListing, getAllUserListing } from "../app/features/listingSlice";
+import api from "../configs/axios";
 
 const Managelisting = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { userListings } = useSelector((state) => state.listing);
+
+  const { getToken } = useAuth();
+  const dispatch = useDispatch();
+
 
   const [loadingListing, setLoadingListing] = React.useState(false);
   const [isEditing, setIsEditing] = React.useState(false);
@@ -117,18 +123,58 @@ const Managelisting = () => {
 }, [id, userListings, navigate]);
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    const toastId = toast.loading("Saving...");
+    const dataCopy = structuredClone(formData);
 
     if (!formData.title) {
+      toast.dismiss(toastId);
       toast.error("Title is required");
       return;
     }
 
-    if (isEditing) {
-      toast.success("Listing updated successfully");
-    } else {
-      toast.success("Listing created successfully");
+    try {
+      if (isEditing) {
+        dataCopy.images = formData.images.filter((image) => typeof image === "string");
+        const formDataInstance = new FormData();
+        formDataInstance.append("accountDetails", JSON.stringify(dataCopy));
+
+        formData.images
+          .filter((image) => typeof image !== "string")
+          .forEach((image) => {
+            formDataInstance.append("images", image);
+          });
+
+        const token = await getToken();
+        const { data } = await api.put("/api/listing", formDataInstance, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success(data.message);
+      } else {
+        delete dataCopy.images;
+
+        const formDataInstance = new FormData();
+        formDataInstance.append("accountDetails", JSON.stringify(dataCopy));
+        formData.images.forEach((image) => {
+          formDataInstance.append("images", image);
+        });
+
+        const token = await getToken();
+        const { data } = await api.post("/api/listing", formDataInstance, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        toast.success(data.message);
+      }
+
+      dispatch(getAllUserListing({ getToken }));
+      dispatch(getAllPublicListing());
+      navigate("/my-listings");
+    } catch (error) {
+      console.log(error);
+      toast.error(error.response?.data?.message || "Failed to save listing");
+    } finally {
+      toast.dismiss(toastId);
     }
   };
 
