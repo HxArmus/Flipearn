@@ -1,35 +1,56 @@
-import { useState } from 'react';
-import { useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import toast from 'react-hot-toast';
 import { ArrowUpRightFromSquareIcon, CopyIcon, Loader2Icon, XIcon } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { dummyOrders, getProfileLink } from '../../assets/assets';
+import { useAuth } from '@clerk/clerk-react';
+import { getProfileLink } from '../../assets/assets';
+import api from '../../configs/axios';
 
 const CredentialVerifyModal = ({ listing, onClose }) => {
+    const { getToken } = useAuth();
 
     const [loading, setLoading] = useState(true);
     const [credential, setCredential] = useState(null);
     const [isVerified, setIsVerified] = useState(false);
+    const [verifying, setVerifying] = useState(false);
 
-    const profileLink = getProfileLink(listing.platform, listing.username);
+    const rawProfileLink = getProfileLink(listing.platform, listing.username);
+    const profileLink = rawProfileLink || '#';
+    const hasProfileLink = Boolean(rawProfileLink);
 
     const copyToClipboard = ({ name, value }) => {
         navigator.clipboard.writeText(value);
         toast.success(`${name} copied to clipboard`);
     };
 
-    const fetchCredential = async () => {
-        setCredential(dummyOrders[0].credential)
-        setLoading(false);
-    };
+    const fetchCredential = useCallback(async () => {
+         try {
+            const token = await getToken()
+            const { data } = await api.get(`/api/admin/credential/${listing.id}`, { headers: { Authorization: `Bearer ${token}` } })
+            setCredential(data.credential)
+        } catch (error) {
+            console.log(error)
+            toast.error(error?.response?.data?.message || error.message)
+        }finally{
+            setLoading(false)
+        }
+    });
 
     const verifyCredential = async () => {
-
+       try {
+            const token = await getToken()
+            const {data} = await api.put(`/api/admin/verify-credential/${listing.id}`,{},{headers:{Authorization:`Bearer ${token}`}})
+            toast.success(data.message)
+            onClose()
+        } catch (error) {
+            console.log(error)
+            toast.error(error?.response?.data?.message || error.message) 
+        }
     };
 
     useEffect(() => {
         fetchCredential();
-    }, []);
+    }, [fetchCredential]);
 
     return (
         <div className='fixed inset-0 bg-black/70 backdrop-blur bg-opacity-50 z-100 flex items-center justify-center sm:p-4'>
@@ -54,15 +75,23 @@ const CredentialVerifyModal = ({ listing, onClose }) => {
                     </div>
                 ) : (
                     <div className='flex flex-col items-start gap-3 p-4 overflow-y-scroll text-gray-700'>
-                        {credential?.originalCredential.map((cred, index) => (
-                            <div key={index} className='w-full flex items-center gap-2 group'>
-                                <span className='font-medium'>{cred.name}</span> : {cred.name.toLowerCase() === 'password' ? '********' : cred?.value} <CopyIcon onClick={() => copyToClipboard(cred)} size={14} className='group-hover:visible invisible' />
-                            </div>
-                        ))}
+                        {credential?.originalCredential?.length ? (
+                            credential.originalCredential.map((cred, index) => (
+                                <div key={index} className='w-full flex items-center gap-2 group'>
+                                    <span className='font-medium'>{cred.name}</span> : {cred.name.toLowerCase() === 'password' ? '********' : cred?.value} <CopyIcon onClick={() => copyToClipboard(cred)} size={14} className='group-hover:visible invisible' />
+                                </div>
+                            ))
+                        ) : (
+                            <p className='text-sm text-gray-500'>No credentials submitted for this listing.</p>
+                        )}
 
                         <div className='text-sm flex gap-1 items-center'>
                             <p>Open Platform : </p>
-                            <Link to={profileLink} target='_blank' className='flex gap-1 items-center text-indigo-500'>
+                            <Link
+                                to={profileLink}
+                                target='_blank'
+                                className={`flex gap-1 items-center ${hasProfileLink ? 'text-indigo-500' : 'text-gray-400 pointer-events-none'}`}
+                            >
                                 click here
                                 <ArrowUpRightFromSquareIcon size={13} />
                             </Link>
@@ -75,7 +104,8 @@ const CredentialVerifyModal = ({ listing, onClose }) => {
                             </p>
                         </div>
 
-                        <button onClick={verifyCredential} disabled={!isVerified} className='mt-2 text-sm bg-indigo-500 not-disabled:hover:bg-indigo-700 disabled:opacity-50 text-white font-medium py-2 px-5 rounded-md'>
+                        <button onClick={verifyCredential} disabled={!isVerified || verifying || !credential} className='mt-2 text-sm bg-indigo-500 not-disabled:hover:bg-indigo-700 disabled:opacity-50 text-white font-medium py-2 px-5 rounded-md flex items-center gap-2'>
+                            {verifying && <Loader2Icon className='size-4 animate-spin' />}
                             Verify Credentials
                         </button>
                     </div>
