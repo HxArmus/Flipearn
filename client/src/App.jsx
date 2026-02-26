@@ -58,7 +58,7 @@ const App = () => {
             <Route path='/edit-listing/:id' element={<Managelisting/>} />
               <Route path='/messages' element={<Messages/>} />
                <Route path='/my-orders' element={<Myorder/>} />
-               <Route path='/loading' element={<Loadingpage/>} />
+               <Route path='/loading/:nextUrl' element={<Loadingpage/>} />
 
                <Route path='/admin' element={<Layout />}>
                <Route index element={<Dashboard />} />
