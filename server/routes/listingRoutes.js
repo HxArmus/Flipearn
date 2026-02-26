@@ -15,7 +15,7 @@ router.post("/add-credential", protect, addCredential)
 router.put("/featured/:id", protect, markFeatured)
 router.get("/user-orders", protect, getAllUserOrders)
 router.post("/withdrawn", protect, widthDrawnAmount)
-router.post("/purchase-account/:listingId",protect,purchaseAccount)
+router.get("/purchase-account/:listingId",protect,purchaseAccount)
 
 
 export default router;

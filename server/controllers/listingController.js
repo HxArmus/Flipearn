@@ -2,6 +2,7 @@ import { parse } from "dotenv";
 import { prisma } from "../lib/prisma.js";
 import imageKit from "../lib/imageKit.js";
 import fs from "fs";
+import Stripe from "stripe";
 
 //controller for adding listing to database
 export const addListings = async (req, res) => {
@@ -413,7 +414,7 @@ export const purchaseAccount = async (req, res) => {
                 transactionId: transaction.id,
                 appId: "flipearn",
             },
-            expires_at: Math.floor(Date.now() / 1000) + 30 * 60
+            expires_at: Math.floor(Date.now() / 1000) + 30 * 60 // session expires in 30 mins
         })
 
 

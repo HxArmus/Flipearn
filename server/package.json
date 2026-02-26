@@ -21,7 +21,9 @@
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
     "inngest": "^3.51.0",
-    "multer": "^2.0.2"
+    "multer": "^2.0.2",
+    "nodemailer": "^8.0.1",
+    "stripe": "^20.4.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.11",

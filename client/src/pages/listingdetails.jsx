@@ -20,11 +20,14 @@ import {
   User,
 } from "lucide-react";
 import toast from "react-hot-toast";
-import { useUser } from "@clerk/clerk-react";
+import { useAuth, useClerk, useUser } from "@clerk/clerk-react";
+import api from "../configs/axios"
 
 const Listingdetails = () => {
 
   const {user, isLoaded} = useUser();
+  const {openSignIn} = useClerk();
+  const {getToken} = useAuth();
   
 
   const dispatch = useDispatch();
@@ -54,7 +57,24 @@ const Listingdetails = () => {
     if (!images.length) return;
     setCurrent((prev) => (prev === images.length - 1 ? 0 : prev + 1));
   };
-  const purchaseAccount = async() => {};
+  const purchaseAccount = async() => {
+     try {
+      if (!user) {
+        return openSignIn()
+      }
+      toast.loading("creating payment link...")
+
+      const token = await getToken()
+      const { data } = await api.post(`/api/listing/purchase-account/${listing.id}`,{} ,{ headers: { Authorization: `Bearer ${token}` } })
+
+      toast.dismissAll()
+      window.location.href = data.paymentLink
+    } catch (error) {
+      toast.dismissAll()
+      toast.error(error?.response?.data?.message || error.message)
+      console.log(error)
+    }
+  };
   const loadChatBox = () => {
     if(!user || !isLoaded) return toast('please login to chat with seller')
       if(user.id === listing.ownerId) return toast('you cant chat with your own listing')
