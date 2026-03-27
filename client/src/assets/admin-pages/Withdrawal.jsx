@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Loader2Icon } from 'lucide-react';
-import AdminTitle from '../../components/admin/AdminTitle';
-import WithdrawalDetail from '../../components/admin/WithdrawalDetail';
+import AdminTitle from '../../components/Admin/AdminTitle';
+import WithdrawalDetail from '../../components/Admin/WithdrawalDetail';
 import { dummyWithdrawalRequests } from '../../assets/assets';
 
 const Withdrawal = () => {
@@ -87,3 +87,4 @@ const Withdrawal = () => {
 };
 
 export default Withdrawal;
+

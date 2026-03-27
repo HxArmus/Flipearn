@@ -1,7 +1,7 @@
-import AdminTitle from "../../components/admin/AdminTitle";
+import AdminTitle from "../../components/Admin/AdminTitle";
 import { useEffect, useState } from "react";
 import { Loader2Icon } from "lucide-react";
-import CredentialChangeModal from "../../components/admin/CredentialChangeModal";
+import CredentialChangeModal from "../../components/Admin/CredentialChangeModal";
 import { useAuth } from "@clerk/clerk-react";
 import toast from "react-hot-toast";
 import api from "../../configs/axios";
@@ -99,3 +99,4 @@ const CredentialChange = () => {
 };
 
 export default CredentialChange;
+

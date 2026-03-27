@@ -1,7 +1,7 @@
-import AdminTitle from '../../components/admin/AdminTitle';
+import AdminTitle from '../../components/Admin/AdminTitle';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import ListingDetailsModal from '../../components/admin/ListingDetailsModal';
+import ListingDetailsModal from '../../components/Admin/ListingDetailsModal';
 import { Loader2Icon } from 'lucide-react';
 import { dummyOrders } from '../../assets/assets';
 import { useAuth } from '@clerk/clerk-react';
@@ -86,3 +86,4 @@ const Transactions = () => {
 };
 
 export default Transactions;
+

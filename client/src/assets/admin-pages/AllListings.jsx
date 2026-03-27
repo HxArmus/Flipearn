@@ -1,7 +1,7 @@
-import AdminTitle from '../../components/admin/AdminTitle';
+import AdminTitle from '../../components/Admin/AdminTitle';
 import { useEffect, useState } from 'react';
 import { CheckCircleIcon, Loader2Icon, MailCheckIcon, XIcon } from 'lucide-react';
-import ListingDetailsModal from '../../components/admin/ListingDetailsModal';
+import ListingDetailsModal from '../../components/Admin/ListingDetailsModal';
 import { dummyListings } from '../../assets/assets';
 
 const AllListings = () => {
@@ -94,3 +94,4 @@ const AllListings = () => {
 };
 
 export default AllListings;
+

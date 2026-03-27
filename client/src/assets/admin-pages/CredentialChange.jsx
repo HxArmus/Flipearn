@@ -1,8 +1,8 @@
-import AdminTitle from '../../components/admin/AdminTitle';
+import AdminTitle from '../../components/Admin/AdminTitle';
 import { useEffect } from 'react';
 import { useState } from 'react';
 import { Loader2Icon } from 'lucide-react';
-import CredentialChangeModal from '../../components/admin/CredentialChangeModal';
+import CredentialChangeModal from '../../components/Admin/CredentialChangeModal';
 import { dummyListings } from '../../assets/assets';
 
 const CredentialChange = () => {
@@ -80,3 +80,4 @@ const CredentialChange = () => {
 };
 
 export default CredentialChange;
+

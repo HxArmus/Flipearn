@@ -1,6 +1,6 @@
 import { Outlet, Link } from "react-router-dom";
-import AdminSidebar from "../../components/admin/AdminSidebar";
-import AdminNavbar from "../../components/admin/AdminNavbar";
+import AdminSidebar from "../../components/Admin/AdminSidebar";
+import AdminNavbar from "../../components/Admin/AdminNavbar";
 import { useState } from "react";
 import { useEffect } from "react";
 import { ArrowRightIcon, Loader2Icon } from "lucide-react";
@@ -72,3 +72,4 @@ fetchIsAdmin();
 };
 
 export default Layout;
+
