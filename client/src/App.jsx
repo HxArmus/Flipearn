@@ -1,6 +1,6 @@
 import React from 'react'
 import { Routes,Route, useLocation } from 'react-router-dom'
-import Home from './pages/home'
+import Home from './pages/Home';
 import Marketplace from './pages/Marketplace'
 import MyListing from './pages/MyListing'
 import Listingdetails from './pages/ListingDetails'
