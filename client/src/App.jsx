@@ -2,7 +2,7 @@ import React from 'react'
 import { Routes,Route, useLocation } from 'react-router-dom'
 import Home from './pages/Home';
 import Marketplace from './pages/Marketplace'
-import MyListing from './pages/MyListing'
+import MyListing from './pages/MyListing';
 import ListingDetails from './pages/ListingDetails'
 import ManageListing from './pages/ManageListing'
 import Messages from './pages/Messages'

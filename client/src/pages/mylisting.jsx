@@ -449,4 +449,4 @@ const MyListing = () => {
   );
 };
 
-export default MyListing;
+export default MyListing
