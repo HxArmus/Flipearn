@@ -23,7 +23,7 @@ import toast from "react-hot-toast";
 import { useAuth, useClerk, useUser } from "@clerk/clerk-react";
 import api from "../configs/axios"
 
-const Listingdetails = () => {
+const ListingDetails = () => {
 
   const {user, isLoaded} = useUser();
   const {openSignIn} = useClerk();
@@ -323,4 +323,4 @@ const Listingdetails = () => {
   ( <div className="h-screen flex justify-center items-center"> <Loader2Icon className="size-7 animate-spin text-indigo-600" /> </div> );
 };
 
-export default Listingdetails;
+export default ListingDetails;

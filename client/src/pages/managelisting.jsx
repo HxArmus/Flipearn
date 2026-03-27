@@ -7,7 +7,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { getAllPublicListing, getAllUserListing } from "../app/features/listingSlice";
 import api from "../configs/axios";
 
-const Managelisting = () => {
+const ManageListing = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { userListings } = useSelector((state) => state.listing);
@@ -480,4 +480,4 @@ const SelectField = ({ label, value, onChange, options, required=false }) => (
     );
   
 
-export default Managelisting;
+export default ManageListing;
