@@ -3,11 +3,11 @@ import { Routes,Route, useLocation } from 'react-router-dom'
 import Home from './pages/Home';
 import Marketplace from './pages/Marketplace'
 import MyListing from './pages/MyListing'
-import Listingdetails from './pages/ListingDetails'
-import Managelisting from './pages/ManageListing'
+import ListingDetails from './pages/ListingDetails'
+import ManageListing from './pages/ManageListing'
 import Messages from './pages/Messages'
-import Myorder from './pages/MyOrders'
-import Loadingpage from './pages/Loading'
+import MyOrders from './pages/MyOrders'
+import Loading from './pages/Loading'
 import Navbar from './components/Navbar'
 import Chatbox from './components/Chatbox'
 import { Toaster } from 'react-hot-toast'
@@ -53,12 +53,12 @@ const App = () => {
         <Route path='/' element={<Home/>} />
          <Route path='/marketplace' element={<Marketplace/>} />
           <Route path='/my-listings' element={<MyListing />} />
-           <Route path='/listing/:listingId' element={<Listingdetails/>} />
-            <Route path='/create-listing' element={<Managelisting/>} />
-            <Route path='/edit-listing/:id' element={<Managelisting/>} />
+           <Route path='/listing/:listingId' element={<ListingDetails/>} />
+            <Route path='/create-listing' element={<ManageListing/>} />
+            <Route path='/edit-listing/:id' element={<ManageListing/>} />
               <Route path='/messages' element={<Messages/>} />
-               <Route path='/my-orders' element={<Myorder/>} />
-               <Route path='/loading/:nextUrl' element={<Loadingpage/>} />
+               <Route path='/my-orders' element={<MyOrders/>} />
+               <Route path='/loading/:nextUrl' element={<Loading/>} />
 
                <Route path='/admin' element={<Layout />}>
                <Route index element={<Dashboard />} />
