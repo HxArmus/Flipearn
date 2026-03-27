@@ -99,4 +99,4 @@ const Marketplace = () => {
   )
 }
 
-export default Marketplace
+export default Marketplace;
